@@ -1,0 +1,5 @@
+deb-*
+pacman-*
+rpm-*
+.direnv
+.envrc
