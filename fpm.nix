@@ -6,7 +6,7 @@
   extraPkgs ? [],
 }: pkg:
 pkgs.stdenv.mkDerivation {
-  name = "${target}-single-${pkg.name}";
+  name = "${target}-single-${pkg.pname or pkg.name}";
   buildInputs = with pkgs; [fpm fakeroot] ++ extraPkgs;
 
   dontUnpack = true;
@@ -22,9 +22,12 @@ pkgs.stdenv.mkDerivation {
     fakeroot -- fpm \
       -s dir \
       -t ${target} \
-      --name ${pkg.pname} \
-      --version ${pkg.version} \
-      ${pkgs.lib.concatStringsSep " " extraFlags} \
+      --name ${pkg.pname or pkg.name} \
+      ${
+      if pkgs.lib.hasAttr "version" pkg
+      then "--version ${pkg.version}"
+      else ""
+    } ${pkgs.lib.concatStringsSep " " extraFlags} \
       nix usr
   '';
 
