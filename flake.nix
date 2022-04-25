@@ -54,7 +54,10 @@
         deb.target = "deb";
         apk.target = "apk";
         tar.target = "tar";
-        zip.target = "zip";
+        zip = {
+          target = "zip";
+          extraBuildInputs = [pkgs.zip];
+        };
       };
       types = {
         # aka the "default"
