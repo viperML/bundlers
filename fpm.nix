@@ -13,22 +13,19 @@ pkgs.stdenv.mkDerivation {
 
   buildPhase = ''
     export HOME=$PWD
-    mkdir -p ./nix/store/
-    mkdir -p ./bin
-    for item in "$(cat ${pkgs.referencesByPopularity pkg})"
-    do
-      cp -r $item ./nix/store/
+    mkdir -p nix/store
+    for item in "$(cat ${pkgs.referencesByPopularity pkg})"; do
+      cp -r $item nix/store/
     done
-    cp -r ${pkg}/bin/* ./bin/
-    chmod -R a+rwx ./nix
-    chmod -R a+rwx ./bin
+    chmod -R u+w nix
+    install -Dvm755 -t usr/bin ${pkg}/bin/*
     fpm \
       -s dir \
       -t ${target} \
       --name ${pkg.pname} \
       --version ${pkg.version} \
-      nix bin
-    ls -a
+      ${pkgs.lib.concatStringsSep " " extraFlags} \
+      nix usr
   '';
 
   installPhase = ''

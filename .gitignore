@@ -1,5 +1,8 @@
 deb-*
+*.deb
 pacman-*
+*.pkg*
 rpm-*
+*.rpm
 .direnv
 .envrc

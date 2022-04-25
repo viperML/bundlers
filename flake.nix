@@ -23,6 +23,9 @@
           target = "rpm";
           extraPkgs = with pkgsFor system; [rpm];
         };
+        toAPK.target = "apk";
+        toTAR.target = "tar";
+        toZIP.target = "zip";
       });
 
     devShells = genSystems (system: {
