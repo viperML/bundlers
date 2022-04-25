@@ -34,7 +34,6 @@
     # - fpm target
     # - style (single package, multi package, etc)
     bundlers = genSystems (system: let
-      pkgs = pkgsFor.${system};
       targets = {
         pacman = {
           target = "pacman";
@@ -57,6 +56,7 @@
         "-multi" = "multi";
       };
 
+      pkgs = pkgsFor.${system};
       r = lib.mapAttrs (type-name: type-key:
         lib.mapAttrs' (
           target-name: target-opts:
