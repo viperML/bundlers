@@ -53,6 +53,7 @@ in {
             --version none \
             ${lib.concatStringsSep " " extraFlags} \
             nix
+          chmod -R u+w nix
           rm -rf nix
         done
 
