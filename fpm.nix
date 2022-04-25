@@ -7,7 +7,7 @@
 }: pkg:
 pkgs.stdenv.mkDerivation {
   name = "${target}-single-${pkg.name}";
-  buildInputs = with pkgs; [fpm] ++ extraPkgs;
+  buildInputs = with pkgs; [fpm fakeroot] ++ extraPkgs;
 
   dontUnpack = true;
 
@@ -19,7 +19,7 @@ pkgs.stdenv.mkDerivation {
     done
     chmod -R u+w nix
     install -Dvm755 -t usr/bin ${pkg}/bin/*
-    fpm \
+    fakeroot -- fpm \
       -s dir \
       -t ${target} \
       --name ${pkg.pname} \
