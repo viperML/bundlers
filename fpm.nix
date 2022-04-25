@@ -46,8 +46,6 @@ in {
           echo ">>> Bundling dep $dep"
           mkdir -p nix/store
           cp -r $dep nix/store
-          # Is this needed?
-          chmod -R u+w nix
           fakeroot -- fpm \
             -s dir \
             -t ${target} \
