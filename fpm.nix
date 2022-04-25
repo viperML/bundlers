@@ -37,8 +37,8 @@ in {
   multi = pkg:
   /*
    Produces multiple packages:
-   - A package for every dependency (including the package itself)
-   - A "meta-package" containing symlinks to the original package to /usr
+   - Packages "nix-bundle" containing each store item for runtime deps
+   - Symlinks in /usr/bin and /usr/share to the input package in the store
    */
     pkgs.stdenv.mkDerivation {
       name = "${target}-multi-${pkg.name}";
@@ -83,11 +83,11 @@ in {
   single-full = pkg:
   /*
    Produces a single package with:
-   - All the runtime dependencies of the original package (and itself) in the store
-   - Links bin and share into usr for the input package
+   - All runtime deps from the store
+   - Symlinks in /usr/bin and /usr/share to the input package in the store
    */
     pkgs.stdenv.mkDerivation {
-      name = "${target}-single-with-deps-${pkg.name}";
+      name = "${target}-single-full-${pkg.name}";
       inherit buildInputs installPhase;
       dontUnpack = true;
       buildPhase = ''
@@ -107,6 +107,32 @@ in {
           --version ${getVersion pkg} \
           ${lib.concatStringsSep " " extraFlags} \
           nix usr
+      '';
+    };
+
+  single = pkg:
+    pkgs.stdenv.mkDerivation {
+      /*
+       Produces a single package with:
+       - All the contents of the input in the store, nothing more
+       */
+      name = "${target}-single-${pkg.name}";
+      inherit buildInputs installPhase;
+      dontUnpack = true;
+
+      buildPhase = ''
+        export HOME=$PWD
+
+        mkdir -p nix/store
+        cp -r ${pkg} nix/store
+
+        fakeroot -- fpm \
+          -s dir \
+          -t ${target} \
+          --name "nix-bundle-$(echo ${pkg} | cut -d'/' -f4)" \
+          --version 0.0 \
+          ${lib.concatStringsSep " " extraFlags} \
+          nix
       '';
     };
 }

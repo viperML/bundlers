@@ -30,7 +30,7 @@
         f [] attrList;
   in {
     /*
-       Nasty mapAttrs to get a bundler for every:
+     Nasty mapAttrs to get a bundler for every:
      - architecuture
      - fpm target
      - style (single package, multi package, etc)
@@ -62,6 +62,7 @@
 
         "-single-full" = "single-full";
         "-multi" = "multi";
+        "-single" = "single";
       };
 
       pkgs = pkgsFor.${system};
