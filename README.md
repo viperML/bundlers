@@ -17,7 +17,7 @@ It uses [fpm](https://github.com/jordansissel/fpm) to bundle nix packages.
 
 You can select the specific bundler with:
 
-`nix bundle [.....] github:viperML/bundlers#bundlers.<system>.<fpm-target>-<style>`
+`nix bundle [.....] github:viperML/bundlers#bundlers.<system>.<fpm-target>-<type>`
 
 or show every bundler available with:
 
@@ -35,7 +35,3 @@ nix bundle github:viperML/bundlers#pacman -o result --inputs-from $SOURCE $SOURC
 docker run -it -v $(readlink -f result):/mnt:ro archlinux:latest
 # pacman -U /mnt/*.pkg.tar.zst
 ```
-
-
-## TODO
-- [] Properly insert the package version (and parse name into pname+version)

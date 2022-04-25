@@ -5,6 +5,8 @@
   extraFlags ? [],
   extraPkgs ? [],
 }: let
+  inherit (pkgs) lib;
+
   install_usr = pkg: ''
     mkdir -p usr/bin
     for binary in ${pkg}/bin/*; do
@@ -21,6 +23,9 @@
     mkdir -p $out
     find . -maxdepth 1 -type f -not -name "env-vars" -exec cp {} $out \;
   '';
+
+  getPname = pkg: pkg.pname or lib.getName pkg.name;
+  getVersion = pkg: "${pkg.version or lib.getVersion pkg.name}.$(echo ${pkg} | cut -d'/' -f 4 | cut -c -7)";
 in {
   multi = pkg:
   /*
@@ -48,7 +53,7 @@ in {
             -t ${target} \
             --name "nix-bundle-$(echo $dep | cut -d'/' -f4)" \
             --version none \
-            ${pkgs.lib.concatStringsSep " " extraFlags} \
+            ${lib.concatStringsSep " " extraFlags} \
             nix
           rm -rf nix
         done
@@ -62,14 +67,19 @@ in {
         fakeroot -- fpm \
           -s dir \
           -t ${target} \
-          --name "${pkg.name}" \
-          --version $(echo ${pkg} | cut -d"/" -f 4 | cut -c -7) \
+          --name "${getPname pkg}" \
+          --version ${getVersion pkg} \
           $(sed 's/^/--depends '/g $out/deps-pkgs) \
           usr
       '';
     };
 
   single-full = pkg:
+  /*
+   Produces a single package with:
+   - All the runtime dependencies of the original package (and itself) in the store
+   - Links bin and share into usr for the input package
+   */
     pkgs.stdenv.mkDerivation {
       name = "${target}-single-with-deps-${pkg.name}";
       inherit buildInputs installPhase;
@@ -87,8 +97,9 @@ in {
         fakeroot -- fpm \
           -s dir \
           -t ${target} \
-          --name ${pkg.name} \
-          ${pkgs.lib.concatStringsSep " " extraFlags} \
+          --name ${getPname pkg} \
+          --version ${getVersion pkg} \
+          ${lib.concatStringsSep " " extraFlags} \
           nix usr
       '';
     };

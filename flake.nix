@@ -29,10 +29,18 @@
       in
         f [] attrList;
   in {
-    # Nasty mapAttrs to get a bundler for every:
-    # - architecuture
-    # - fpm target
-    # - style (single package, multi package, etc)
+    /*
+       Nasty mapAttrs to get a bundler for every:
+     - architecuture
+     - fpm target
+     - style (single package, multi package, etc)
+
+     The bundler outputs are constructed such as:
+     outputs.bundlers.<system>.<target>-<type>
+     For example:
+     outputs.bundlers.x86_64-linux.pacman-multi
+     */
+
     bundlers = genSystems (system: let
       targets = {
         pacman = {
