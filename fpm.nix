@@ -69,7 +69,7 @@ in {
       '';
     };
 
-  single-with-deps = pkg:
+  single-full = pkg:
     pkgs.stdenv.mkDerivation {
       name = "${target}-single-with-deps-${pkg.name}";
       inherit buildInputs installPhase;

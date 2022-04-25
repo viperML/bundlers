@@ -52,7 +52,7 @@
         # aka the "default"
         "" = "single-with-deps";
 
-        "-single-with-deps" = "single-with-deps";
+        "-single-full" = "single-full";
         "-multi" = "multi";
       };
 
