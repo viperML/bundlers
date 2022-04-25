@@ -58,7 +58,7 @@
       };
       types = {
         # aka the "default"
-        "" = "single-with-deps";
+        "" = "single-full";
 
         "-single-full" = "single-full";
         "-multi" = "multi";
