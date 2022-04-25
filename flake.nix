@@ -45,11 +45,11 @@
       targets = {
         pacman = {
           target = "pacman";
-          extraPkgs = with pkgs; [libarchive zstd];
+          extraBuildInputs = [pkgs.libarchive pkgs.zstd];
         };
         rpm = {
           target = "rpm";
-          extraPkgs = with pkgs; [rpm];
+          extraBuildInputs = [pkgs.rpm];
         };
         deb.target = "deb";
         apk.target = "apk";
@@ -69,10 +69,10 @@
         lib.mapAttrs' (
           target-name: target-opts:
             lib.nameValuePair "${target-name}${type-name}"
-            (import ./fpm.nix {
-              inherit system pkgs;
-              inherit (target-opts) target extraPkgs;
-            })
+            (import ./fpm.nix ({
+                inherit system pkgs;
+              }
+              // target-opts))
             .${type-key}
         )
         targets)

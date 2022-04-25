@@ -3,7 +3,7 @@
   pkgs,
   target,
   extraFlags ? [],
-  extraPkgs ? [],
+  extraBuildInputs ? [],
 }: let
   inherit (pkgs) lib;
 
@@ -18,14 +18,21 @@
     find usr -type d -exec chmod 755 {} +
   '';
 
-  buildInputs = with pkgs; [fpm fakeroot] ++ extraPkgs;
+  buildInputs = with pkgs; [fpm fakeroot] ++ extraBuildInputs;
   installPhase = ''
     mkdir -p $out
     find . -maxdepth 1 -type f -not -name "env-vars" -exec cp {} $out \;
   '';
 
-  getPname = pkg: pkg.pname or lib.getName pkg.name;
-  getVersion = pkg: "${pkg.version or lib.getVersion pkg.name}.$(echo ${pkg} | cut -d'/' -f 4 | cut -c -7)";
+  getPname = pkg:
+    if lib.hasAttr "pname" pkg
+    then pkg.pname
+    else lib.getName pkg.name;
+  getVersion = pkg: ''${
+      if lib.hasAttr "version" pkg
+      then pkg.version
+      else lib.getVersion pkg.name
+    }.$(echo ${pkg} | cut -d'/' -f 4 | cut -c -7)'';
 in {
   multi = pkg:
   /*
@@ -50,7 +57,7 @@ in {
             -s dir \
             -t ${target} \
             --name "nix-bundle-$(echo $dep | cut -d'/' -f4)" \
-            --version none \
+            --version 0.0 \
             ${lib.concatStringsSep " " extraFlags} \
             nix
           chmod -R u+w nix
