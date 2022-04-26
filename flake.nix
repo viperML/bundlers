@@ -69,7 +69,7 @@
       };
 
       pkgs = pkgsFor.${system};
-      r = lib.mapAttrs (type-name: type-key:
+      fpm-bundlers = lib.mapAttrs (type-name: type-key:
         lib.mapAttrs' (
           target-name: target-opts:
             lib.nameValuePair "${target-name}${type-name}"
@@ -82,7 +82,21 @@
         targets)
       types;
     in
-      recursiveMerge (lib.attrValues r));
+      (recursiveMerge (lib.attrValues fpm-bundlers))
+      // {
+        docker = drv:
+          pkgs.dockerTools.buildLayeredImage {
+            inherit (drv) name;
+            tag = "latest";
+            contents = [drv];
+          };
+        docker-with-coreutils = drv:
+          pkgs.dockerTools.buildLayeredImage {
+            inherit (drv) name;
+            tag = "latest";
+            contents = [drv pkgs.coreutils-full];
+          };
+      });
 
     devShells = genSystems (system: {
       default = with pkgsFor.${system};
