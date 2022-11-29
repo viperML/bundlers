@@ -4,7 +4,7 @@ Experimental bundlers to use with the nix API:
 
 ```console
 export SOURCE="nixpkgs"
-nix bundle github:viperML/bundlers#pacman --inputs-from $SOURCE $SOURCE#hello
+nix bundle --bundler github:viperML/bundlers#pacman --inputs-from $SOURCE $SOURCE#hello
 ```
 
 ## What is this?
@@ -17,7 +17,7 @@ It uses [fpm](https://github.com/jordansissel/fpm) to bundle nix packages.
 
 You can select the specific bundler with:
 
-`nix bundle [.....] github:viperML/bundlers#bundlers.<system>.<fpm-target>-<type>`
+`nix bundle --bundler github:viperML/bundlers#bundlers.<system>.<fpm-target>-<type> ...`
 
 or show every bundler available with:
 
