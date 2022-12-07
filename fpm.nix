@@ -8,14 +8,18 @@
   inherit (pkgs) lib;
 
   install_usr = pkg: ''
-    mkdir -p usr/bin
-    for binary in ${pkg}/bin/*; do
-      ln -sf $binary usr/bin
-    done
+    if [ -d ${pkg}/bin ] && [ "$(ls -A ${pkg}/bin)" ]; then
+      mkdir -p usr/bin
+      for binary in ${pkg}/bin/*; do
+        ln -sf $binary usr/bin
+      done
+    fi
 
-    mkdir -p usr/share
-    cp -Rs ${pkg}/share/ usr/
-    find usr -type d -exec chmod 755 {} +
+    if [ -d ${pkg}/share ] && [ "$(ls -A ${pkg}/share)" ]; then
+      mkdir -p usr/share
+      cp -Rs ${pkg}/share/ usr/
+      find usr -type d -exec chmod 755 {} +
+    fi
   '';
 
   buildInputs = with pkgs; [fpm fakeroot] ++ extraBuildInputs;
